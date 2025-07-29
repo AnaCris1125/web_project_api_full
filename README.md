@@ -4,11 +4,11 @@ Descripcion: El proyecto web_project_api_full es el numero 18 en el prograna de 
 
 Caracteristicas del proyecto:
 
-Autenticación y autorización 
-Creación de servidor.
-Despliegue del proyecto en un servidor virtual.
-Implementación de solicitudes errores.
-Conectar backend y frontend.
+- Autenticación y autorización 
+- Creación de servidor.
+- Despliegue del proyecto en un servidor virtual.
+- Implementación de solicitudes errores.
+- Conectar backend y frontend.
 
 
 
