@@ -1,90 +1,94 @@
-const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-
-// // GET /users
-// module.exports.getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.send(users))
-//     .catch(() => res.status(500).send({ message: 'Error del servidor' }));
-// };
-
-// // GET /users/:userId
-// module.exports.getUserById = (req, res) => {
-//   User.findById(req.params.userId)
-//     .orFail(() => new Error('NotFound'))
-//     .then((user) => res.send(user))
-//     .catch((err) => {
-//       if (err.name === 'CastError') return res.status(400).send({ message: 'ID inválido' });
-//       if (err.message === 'NotFound') return res.status(404).send({ message: 'Usuario no encontrado' });
-//       return res.status(500).send({ message: 'Error del servidor' });
-//     });
-// };
-
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+
 const { JWT_SECRET = 'dev-secret' } = process.env;
 
-const login = (req, res, next) => {
+// POST /signup
+module.exports.createUser = (req, res, next) => {
+  const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) =>
+      User.create({ name, about, avatar, email, password: hash }))
+    .then((user) => res.send({
+      _id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
+    }))
+    .catch((err) => {
+      console.error('Error creando usuario:', err); 
+      next(err);
+    });
+};
+
+// POST /signin
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  let userRecord;
 
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Correo o contraseña incorrectos');
       }
-      userRecord = user;
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        throw new UnauthorizedError('Correo o contraseña incorrectos');
-      }
-      const token = jwt.sign(
-        { _id: userRecord._id },
-        JWT_SECRET,
-        { expiresIn: '7d' },  
-      );
-      res.send({ token });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new UnauthorizedError('Correo o contraseña incorrectos');
+          }
+          const token = jwt.sign(
+            { _id: user._id },
+            JWT_SECRET,
+            { expiresIn: '7d' },
+          );
+          res.send({ token });
+        });
     })
     .catch(next);
 };
 
-const getCurrentUser = (req, res, next) => {
+// GET /users/me
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.send(user))
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Usuario no encontrado' });
+      }
+      res.send(user);
+    })
     .catch(next);
 };
 
-// // PATCH /users/me
-// module.exports.updateProfile = (req, res) => {
-//   const { name, about } = req.body;
-//   User.findByIdAndUpdate(
-//     req.user._id,
-//     { name, about },
-//     { new: true, runValidators: true }
-//   )
-//     .orFail(() => new Error('NotFound'))
-//     .then((user) => res.send(user))
-//     .catch((err) => {
-//       if (err.name === 'ValidationError') return res.status(400).send({ message: 'Datos inválidos' });
-//       if (err.message === 'NotFound') return res.status(404).send({ message: 'Usuario no encontrado' });
-//       return res.status(500).send({ message: 'Error del servidor' });
-//     });
-// };
+// PATCH /users/me
+module.exports.updateUserProfile = (req, res, next) => {
+  const { name, about } = req.body;
 
-// // PATCH /users/me/avatar
-// module.exports.updateAvatar = (req, res) => {
-//   const { avatar } = req.body;
-//   User.findByIdAndUpdate(
-//     req.user._id,
-//     { avatar },
-//     { new: true, runValidators: true }
-//   )
-//     .orFail(() => new Error('NotFound'))
-//     .then((user) => res.send(user))
-//     .catch((err) => {
-//       if (err.name === 'ValidationError') return res.status(400).send({ message: 'URL de avatar inválida' });
-//       if (err.message === 'NotFound') return res.status(404).send({ message: 'Usuario no encontrado' });
-//       return res.status(500).send({ message: 'Error del servidor' });
-//     });
-// };
+  User.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true }
+  )
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Usuario no encontrado' });
+      }
+      res.send(user);
+    })
+    .catch(next);
+};
+
+module.exports.updateUserAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    { new: true, runValidators: true }
+  )
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Usuario no encontrado' });
+      }
+      res.send(user);
+    })
+    .catch(next);
+};

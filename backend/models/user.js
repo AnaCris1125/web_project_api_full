@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { isURL } = require('validator');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    select: false, // para que no venga por defecto
+    select: false, 
   },
   name: {
     type: String,
@@ -29,3 +29,5 @@ const userSchema = new mongoose.Schema({
     default: 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg',
   },
 });
+
+module.exports = mongoose.model('User', userSchema);

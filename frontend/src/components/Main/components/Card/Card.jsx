@@ -2,17 +2,17 @@ import React from "react";
 
 function Card({ card, onDelete, onLike, onClick, currentUserId }) {
   const isOwner = card.owner && card.owner._id === currentUserId;
-  const isLiked = card.likes?.some(like => like._id === currentUserId);
+  const isLiked = card.likes.includes(currentUserId);
+
 
   return (
     <li key={card._id} className="cards__item">
-      {isOwner && (
+      
         <button
           className="cards__item-delete"
           onClick={onDelete}
           aria-label="Eliminar tarjeta"
         />
-      )}
 
       <img
         className="cards__item-img"
@@ -25,7 +25,9 @@ function Card({ card, onDelete, onLike, onClick, currentUserId }) {
         <p className="cards__item-name">{card.name}</p>
         <button
           className={`cards__item-like ${isLiked ? "cards__item-like_active" : ""}`}
-          onClick={onLike}
+          onClick={() => {
+            onLike();
+          }}
           aria-label="Me gusta"
         />
       </div>

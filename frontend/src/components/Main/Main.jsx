@@ -55,59 +55,66 @@ function Main({ cards, setCards, setCurrentUser }) {
 
   const handleUpdateUser = (userInfo) => {
     setIsLoading(true);
-    setCurrentUser(prevUser => {
-      const updatedUser = { ...prevUser, name: userInfo.name, about: userInfo.about };
-      localStorage.setItem(`userData_${prevUser._id}`, JSON.stringify(updatedUser)); 
-      return updatedUser;
-    });
-    closeAllPopups();
-    setIsLoading(false);
+    api.updateUserInfo(userInfo)
+      .then((updatedUser) => {
+        setCurrentUser(updatedUser);
+        closeAllPopups();
+      })
+      .catch((err) => console.log('Error al actualizar perfil:', err))
+      .finally(() => setIsLoading(false));
   };
 
   const handleUpdateAvatar = (data) => {
     setIsLoading(true);
-    setCurrentUser(prevUser => {
-      const updatedUser = { ...prevUser, avatar: data.avatar };
-      localStorage.setItem(`userData_${prevUser._id}`, JSON.stringify(updatedUser)); 
-      return updatedUser;
-    });
-    closeAllPopups();
-    setIsLoading(false);
+    api.updateAvatar(data.avatar)
+      .then((updatedUser) => {
+        setCurrentUser(updatedUser);
+        closeAllPopups();
+      })
+      .catch((err) => console.log('Error al actualizar avatar:', err))
+      .finally(() => setIsLoading(false));
   };
 
   const handleAddCard = (newCardData) => {
     setIsLoading(true);
-    const newCard = {
-      _id: Date.now().toString(),
-      name: newCardData.name,
-      link: newCardData.link,
-      likes: [],
-      owner: { _id: currentUser._id }
-    };
-    setCards([newCard, ...cards]);
-    closeAllPopups();
-    setIsLoading(false);
-
+    api.addCard(newCardData)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+        closeAllPopups();
+      })
+      .catch((err) => console.log('Error al agregar card:', err))
+      .finally(() => setIsLoading(false));
   };
 
   const handleCardDelete = () => {
     if (!cardToDelete) return;
     setIsLoading(true);
-    setCards(cards.filter(c => c._id !== cardToDelete._id));
-    closeAllPopups();
-    setIsLoading(false);
+    api.deleteCard(cardToDelete._id)
+      .then(() => {
+        setCards(cards.filter(c => c._id !== cardToDelete._id));
+        closeAllPopups();
+      })
+      .catch((err) => console.log('Error al eliminar card:', err))
+      .finally(() => setIsLoading(false));
   };
 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some(like => like._id === currentUser._id);
-
-    const updatedCard = {
-      ...card,
-      likes: isLiked
-        ? card.likes.filter(like => like._id !== currentUser._id)
-        : [...card.likes, { _id: currentUser._id }]
-    };
-    setCards(cards.map(c => c._id === card._id ? updatedCard : c));
+    const isLiked = card.likes.includes(currentUser._id);
+    console.log('👉 Antes de request, isLiked:', isLiked);
+    const request = isLiked ? api.dislikeCard(card._id) : api.likeCard(card._id);
+  
+    request
+      .then((updatedCard) => {
+        console.log('🔄 updatedCard from backend:', updatedCard);
+        console.log('updatedCard.likes:', updatedCard.likes);
+        setCards((state) => {
+          console.log('💡 Antes de actualizar:', state);
+          const newState = state.map((c) => c._id === card._id ? updatedCard : c);
+          console.log('💡 Después de actualizar:', newState);
+          return newState;
+        });
+      })
+      .catch((err) => console.log('Error al cambiar like:', err));
   };
 
   return (
@@ -115,7 +122,7 @@ function Main({ cards, setCards, setCurrentUser }) {
       <section className="profile">
         <div className="profile__avatar-container">
           <img
-            src={currentUser.avatar || "https://via.placeholder.com/150"}
+            src={currentUser.avatar || "https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg"}
             alt="foto de perfil"
             className="profile__avatar"
             id="avatar"
@@ -128,7 +135,7 @@ function Main({ cards, setCards, setCurrentUser }) {
 
         <div className="profile__info">
           <div>
-            <p className="profile__info-name" id="name">{currentUser.name || "Nombre de usuario"}</p>
+            <p className="profile__info-name" id="name">{currentUser.name || "Jacques Cousteau"}</p>
             <img
               className="profile__edit-button"
               src={editIcon}
@@ -155,8 +162,8 @@ function Main({ cards, setCards, setCurrentUser }) {
               card={card}
               onClick={() => openImagePopup(card)}
               onDelete={() => openConfirmDeletePopup(card)}
-              onLike={() => handleCardLike(card)}
-              currentUserId={currentUser._id}
+              onLike={() => handleCardLike(card)} 
+              currentUserId={currentUser?._id}
             />
           ))}
         </ul>

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { Route, Routes, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 import Header from './Header/Header';
 import Main from './Main/Main';
@@ -9,11 +9,11 @@ import Login from './Login/Login.jsx';
 import Register from './Register/Register.jsx';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
 import InfoTooltip from './InfoTooltip/InfoTooltip.jsx';
+import * as auth from '../utils/auth';
 
-// import api from '../utils/api';
+import api from '../utils/api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { authorize, register, checkToken } from '../utils/auth.js';
-
+// import { authorize, register, checkToken } from '../utils/auth.js';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -21,129 +21,81 @@ function App() {
   const [cards, setCards] = useState([]);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isCheckingToken, setIsCheckingToken] = useState(true); 
+  const [userEmail, setUserEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
-   useEffect(() => {
-    if (currentUser && cards.length > 0) {
-      localStorage.setItem(`userCards_${currentUser._id}`, JSON.stringify(cards));
-    }
-  }, [cards, currentUser]);
-
+  // Al cargar, verifica si hay token:
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem(`userData_${currentUser._id}`, JSON.stringify(currentUser));
-      localStorage.setItem('currentUserId', currentUser._id); 
-    }
-  }, [currentUser]);
-
-   useEffect(() => {
-    const token = localStorage.getItem('jwt');
-    if (token) {
-      checkToken(token)
-        .then((res) => {
-          const userId = res.data._id;
-          const storedUser = JSON.parse(localStorage.getItem(`userData_${userId}`));
-
-          if (storedUser) {
-            setCurrentUser(storedUser);
-          } else {
-            const basicUser = {
-              _id: userId,
-              email: res.data.email,
-              name: "Nombre de prueba",
-              about: "Descripción de prueba",
-              avatar: "https://via.placeholder.com/150"
-            };
-            setCurrentUser(basicUser);
-            localStorage.setItem(`userData_${userId}`, JSON.stringify(basicUser));
-          }
-
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      auth.checkToken(jwt)
+        .then((user) => {
           setLoggedIn(true);
-
-          const storedCards = JSON.parse(localStorage.getItem(`userCards_${userId}`));
-          setCards(storedCards && Array.isArray(storedCards) ? storedCards : []);
-
+          setCurrentUser(user);
+          setUserEmail(user.email);
           navigate('/');
         })
-        .catch(err => {
-          console.error("❌ Token inválido:", err);
-          setLoggedIn(false);
-        });
+        .catch((err) => console.log(err))
+        .finally(() => setIsLoading(false)); // ✅ marca como terminado
+    } else {
+      setIsLoading(false); // ✅ tampoco estamos cargando
     }
   }, [navigate]);
-  
-  const handleLogin = (email, password) => {
-    authorize(email, password)
-      .then(data => {
-        if (data.token) {
-          localStorage.setItem('jwt', data.token);
-          setLoggedIn(true);
-          return checkToken(data.token);
-        }
-        return Promise.reject('No se recibió token');
+
+  useEffect(() => {
+    if (loggedIn) {
+      api.getInitialCards()
+        .then((cards) => {
+          setCards(cards);
+        })
+        .catch((err) => console.log('Error al cargar las cards:', err));
+    }
+  }, [loggedIn]);
+
+
+  // Register handler
+  const handleRegister = ({ email, password }) => {
+    auth.register({ email, password })
+      .then(() => {
+        handleLogin({ email, password }); // loguea después de registrar
       })
-      .then(res => {
-        const userId = res.data._id;
-        const storedUser = JSON.parse(localStorage.getItem(`userData_${userId}`));
-
-        if (storedUser) {
-          setCurrentUser(storedUser);
-        } else {
-          const basicUser = {
-            _id: userId,
-            email: res.data.email,
-            name: "Nombre de prueba",
-            about: "Descripción de prueba",
-            avatar: "https://via.placeholder.com/150"
-          };
-          setCurrentUser(basicUser);
-          localStorage.setItem(`userData_${userId}`, JSON.stringify(basicUser));
-        }
-
-        localStorage.setItem('currentUserId', userId);
-
-        const storedCards = JSON.parse(localStorage.getItem(`userCards_${userId}`));
-        setCards(storedCards && Array.isArray(storedCards) ? storedCards : []);
-
-        navigate('/');
-      })
-      .catch(err => {
-        console.error('Error en login:', err);
-        setIsSuccess(false);
-        setIsTooltipOpen(true);
-      });
+      .catch(err => console.log(err));
   };
 
-  const handleRegister = (email, password) => {
-    register(email, password)
-      .then(res => {
-        if (res.data) {
-          setIsSuccess(true);
-          setCards([]);
-          navigate('/signin');
-        } else {
-          setIsSuccess(false);
-        }
-        setIsTooltipOpen(true);
-      })
-      .catch(() => {
-        setIsSuccess(false);
-        setIsTooltipOpen(true);
-      });
-  };
+    // Login handler
+    const handleLogin = ( email, password ) => {
+      auth.authorize( email, password )
+        .then((data) => {
+          if (data.token) {
+            localStorage.setItem('jwt', data.token);
+            setLoggedIn(true);
+            return auth.checkToken(data.token);
+          }
+        })
+        .then((user) => {
+          setCurrentUser(user.data);
+          navigate('/');
+        })
+        .catch(err => console.log(err));
+    };
 
+  // Logout
   const handleLogout = () => {
-    localStorage.removeItem('jwt');    
-    setLoggedIn(false);                
-    setCurrentUser(null);                                   
+    localStorage.removeItem('jwt');
+    setLoggedIn(false);
+    setUserEmail('');
     navigate('/signin');
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>; // o tu spinner
+  }
+
 
   return (
+    
     <CurrentUserContext.Provider value={{ currentUser }}>
       <Header loggedIn={loggedIn} userEmail={currentUser?.email} onLogout={handleLogout} />
       <Routes>
@@ -176,3 +128,4 @@ function App() {
 
 
 export default App;
+
