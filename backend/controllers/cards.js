@@ -70,7 +70,7 @@ module.exports.dislikeCard = (req, res, next) => {
  
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: mongoose.Types.ObjectId(req.user._id) } },
+    { $pull: { likes: req.user._id } },
     { new: true }
   )
     .orFail(() => {

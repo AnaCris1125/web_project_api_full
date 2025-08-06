@@ -9,6 +9,8 @@ const { JWT_SECRET = 'dev-secret' } = process.env;
 module.exports.createUser = (req, res, next) => {
   const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
 
+  console.log('Body recibido en createUser:', req.body);
+
   bcrypt.hash(password, 10)
     .then((hash) =>
       User.create({ name, about, avatar, email, password: hash }))
