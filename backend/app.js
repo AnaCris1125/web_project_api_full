@@ -22,9 +22,6 @@ const { PORT = 3000, MONGODB_URI } = process.env;
 const corsOptions = {
   origin: ['http://localhost:5174', 'http://localhost:3000', 'https://around.ana.chickenkiller.com', 'https://ana.api.chickenkiller.com'],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  exposedHeaders: ['Authorization', 'Set-Cookie'],
   optionsSuccessStatus: 200
 };
 
