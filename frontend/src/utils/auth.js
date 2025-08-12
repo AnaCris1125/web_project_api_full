@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_BASE_URL || 'https://ana.api.chickenkiller.com';
+const baseUrl = import.meta.env.VITE_BASE_URL || 'https://api.ana.chickenkiller.com';
 
 export const register = ({email, password}) => {
   return fetch(`${baseUrl}/signup`, {
