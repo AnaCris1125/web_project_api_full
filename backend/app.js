@@ -20,7 +20,7 @@ const app = express();
 const { PORT = 3000, MONGODB_URI } = process.env;
 
 const corsOptions = {
-  origin: ['http://localhost:5174', 'http://localhost:3000', 'https://around.ana.chickenkiller.com', 'https://ana.api.chickenkiller.com'],
+  origin: ['http://localhost:5174', 'http://localhost:3000', 'https://around.ana.chickenkiller.com', 'https://api.ana.chickenkiller.com'],
   credentials: true,
   optionsSuccessStatus: 200
 };
