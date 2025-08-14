@@ -1,32 +1,32 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors'); 
+const cors = require('cors');
 const mongoose = require('mongoose');
-const { login, createUser } = require('./controllers/users');
-
 const path = require('path');
 const { errors: celebrateErrors } = require('celebrate');
 const expressWinston = require('express-winston');
 const winston = require('winston');
 
+const { login, createUser } = require('./controllers/users');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const auth = require('./middlewares/auth'); 
-
+const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
-
 const { PORT = 3000, MONGODB_URI } = process.env;
 
+// Configuración CORS
 const corsOptions = {
-  origin: ['http://localhost:5174', 'http://localhost:3000', 'https://around.ana.chickenkiller.com', 'https://api.ana.chickenkiller.com'],
+  origin: 'https://around.ana.chickenkiller.com',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions)); 
-app.options('*', cors(corsOptions)); 
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
@@ -38,19 +38,18 @@ app.use(expressWinston.logger({
   format: winston.format.json(),
 }));
 
-
-// Rutas públicas 
+// Rutas públicas
 app.post('/signup', createUser);
 app.post('/signin', login);
 
-// Middleware de autorización
+// Middleware de autorización para rutas privadas
 app.use(auth);
 
 // Rutas privadas
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
-// Middleware manejo de errores de celebrate
+// Manejo de errores de celebrate
 app.use(celebrateErrors());
 
 // Logger de errores
@@ -61,22 +60,22 @@ app.use(expressWinston.errorLogger({
   format: winston.format.json(),
 }));
 
+// Manejo centralizado de errores
+app.use(errorHandler);
 
-// Conectar a MongoDB y arrancar servidor
+// Conexión a MongoDB y arranque del servidor
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => {
-  app.listen(PORT, () => {
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en el puerto ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Error conectando a MongoDB:', err);
+    process.exit(1);
   });
-})
-.catch((err) => {
-  process.exit(1); 
-});
-
-const errorHandler = require('./middlewares/errorHandler'); 
-// Middleware manejo centralizado de errores
-app.use(errorHandler);
 
 module.exports = app;
