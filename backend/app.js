@@ -17,18 +17,29 @@ const app = express();
 
 const { PORT = 3000, MONGODB_URI } = process.env;
 
+// Middleware para parsear JSON
+app.use(express.json());
+
+// Lista de dominios permitidos para CORS (producción y localhost)
+const allowedOrigins = [
+  'https://around.ana.chickenkiller.com',
+  'http://localhost:3000',
+];
+
 // Configuración CORS
-const corsOptions = {
-  origin: 'https://around.ana.chickenkiller.com',
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-
-app.use(express.json());
+}));
+app.options('*', cors());
 
 // Logger de solicitudes
 app.use(expressWinston.logger({
@@ -42,12 +53,20 @@ app.use(expressWinston.logger({
 app.post('/signup', createUser);
 app.post('/signin', login);
 
-// Middleware de autorización para rutas privadas
+// Middleware de autorización
 app.use(auth);
 
 // Rutas privadas
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
+
+// Servir frontend React en producción
+app.use(express.static(path.join(__dirname, 'frontend', 'build')));
+
+// Cualquier ruta no capturada va al index.html de React
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
+});
 
 // Manejo de errores de celebrate
 app.use(celebrateErrors());
@@ -60,7 +79,7 @@ app.use(expressWinston.errorLogger({
   format: winston.format.json(),
 }));
 
-// Manejo centralizado de errores
+// Middleware centralizado de errores
 app.use(errorHandler);
 
 // Conexión a MongoDB y arranque del servidor
@@ -69,12 +88,13 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 })
   .then(() => {
+    console.log('✅ Conectado a MongoDB');
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en el puerto ${PORT}`);
+      console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('Error conectando a MongoDB:', err);
+    console.error('❌ Error conectando a MongoDB:', err);
     process.exit(1);
   });
 

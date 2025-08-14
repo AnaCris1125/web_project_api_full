@@ -1,4 +1,4 @@
-const baseUrl = import.meta.env.VITE_BASE_URL || 'https://api.ana.chickenkiller.com';
+const baseUrl = import.meta.env.VITE_BASE_URL || 'https://around.ana.chickenkiller.com';
 
 class Api {
   constructor(baseUrl) {
