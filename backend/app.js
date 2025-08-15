@@ -26,19 +26,7 @@ const allowedOrigins = [
   'http://localhost:3000',
 ];
 
-// Configuración CORS
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('No permitido por CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-}));
+
 app.options('*', cors());
 
 // Logger de solicitudes
