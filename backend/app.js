@@ -26,7 +26,7 @@ const allowedOrigins = [
   'http://localhost:3000',
 ];
 
-
+app.use(cors());
 app.options('*', cors());
 
 // Logger de solicitudes
