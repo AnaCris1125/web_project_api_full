@@ -6,22 +6,50 @@ const UnauthorizedError = require('../errors/unauthorizedError');
 const { JWT_SECRET = 'dev-secret' } = process.env;
 
 // POST /signup
+
 module.exports.createUser = (req, res, next) => {
   const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
 
-  console.log('Body recibido en createUser:', req.body);
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Email y contraseña son obligatorios' });
+  }
 
   bcrypt.hash(password, 10)
-    .then((hash) =>
-      User.create({ name, about, avatar, email, password: hash }))
-    .then((user) => res.send({
-      _id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
+    .then((hash) => User.create({ name, about, avatar, email, password: hash }))
+    .then((user) => res.status(201).send({
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
     }))
     .catch((err) => {
-      console.error('Error creando usuario:', err); 
+      console.error('Error creando usuario:', err);
+
+      if (err.code === 11000) { // error de duplicado en MongoDB
+        return res.status(409).send({ message: 'El email ya está registrado' });
+      }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Datos inválidos' });
+      }
       next(err);
     });
 };
+
+// module.exports.createUser = (req, res, next) => {
+//   const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
+
+//   bcrypt.hash(password, 10)
+//     .then((hash) =>
+//       User.create({ name, about, avatar, email, password: hash }))
+//     .then((user) => res.send({
+//       _id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
+//     }))
+//     .catch((err) => {
+//       console.error('Error creando usuario:', err); 
+//       next(err);
+//     });
+// };
 
 // POST /signin
 module.exports.login = (req, res, next) => {
