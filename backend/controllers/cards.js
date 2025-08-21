@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 // GET /cards
 module.exports.getCards = (req, res, next) => {
-  Card.find({})
+  Card.find({owner: req.user._id})
     .populate('likes')
     .then((cards) => res.send(cards))
     .catch(next); 
