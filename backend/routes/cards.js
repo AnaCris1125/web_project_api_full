@@ -3,7 +3,7 @@ const { getCards, createCard, deleteCard, likeCard, dislikeCard } = require('../
 const auth = require('../middlewares/auth');
 
 router.get('/', auth, getCards);
-router.post('/', createCard);
+router.post('/', auth, createCard);
 router.delete('/:cardId', deleteCard);
 router.put('/:cardId/likes', auth, likeCard);
 router.delete('/:cardId/likes', /*auth,*/ dislikeCard);
