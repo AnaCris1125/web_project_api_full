@@ -61,6 +61,7 @@ function App() {
       .then(() => {
         setIsSuccess(true);
         setIsTooltipOpen(true);
+        console.log("Registro exitoso: mostrando modal");
   
         setTimeout(() => {
           setIsTooltipOpen(false);
