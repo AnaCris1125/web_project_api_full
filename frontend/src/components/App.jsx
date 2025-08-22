@@ -59,9 +59,19 @@ function App() {
   const handleRegister = ({ email, password }) => {
     auth.register({ email, password })
       .then(() => {
-        handleLogin({ email, password }); // loguea después de registrar
+        setIsSuccess(true);
+        setIsTooltipOpen(true);
+  
+        setTimeout(() => {
+          setIsTooltipOpen(false);
+          navigate('/signin'); 
+        }, 2000);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        setIsSuccess(false);
+        setIsTooltipOpen(true);
+      });
   };
 
     // Login handler
