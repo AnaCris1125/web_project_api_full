@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 // GET /cards
 module.exports.getCards = (req, res) => {
-  Card.find({})
+  Card.find({ owner: req.user._id })
     .then((cards) => res.send(cards))
     .catch(() => res.status(500).send({ message: 'Error del servidor' }));
 };
