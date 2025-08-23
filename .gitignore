@@ -21,5 +21,11 @@ yarn-error.log*
 .env*
 !.env.example  # Excepción: Si tienes un .env de ejemplo
 
+# Ignorar carpetas de build
+frontend/dist/
+backend/logs/
 
 
+# Otros archivos 
+frontend/assets/
+frontend/vite.svg
