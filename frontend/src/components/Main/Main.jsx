@@ -100,17 +100,12 @@ function Main({ cards, setCards, setCurrentUser }) {
 
   const handleCardLike = (card) => {
     const isLiked = card.likes.includes(currentUser._id);
-    console.log('👉 Antes de request, isLiked:', isLiked);
     const request = isLiked ? api.dislikeCard(card._id) : api.likeCard(card._id);
   
     request
       .then((updatedCard) => {
-        console.log('🔄 updatedCard from backend:', updatedCard);
-        console.log('updatedCard.likes:', updatedCard.likes);
         setCards((state) => {
-          console.log('💡 Antes de actualizar:', state);
           const newState = state.map((c) => c._id === card._id ? updatedCard : c);
-          console.log('💡 Después de actualizar:', newState);
           return newState;
         });
       })

@@ -38,9 +38,9 @@ function App() {
           navigate('/');
         })
         .catch((err) => console.log(err))
-        .finally(() => setIsLoading(false)); // ✅ marca como terminado
+        .finally(() => setIsLoading(false)); 
     } else {
-      setIsLoading(false); // ✅ tampoco estamos cargando
+      setIsLoading(false); 
     }
   }, [navigate]);
 

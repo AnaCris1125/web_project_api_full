@@ -20,7 +20,6 @@ const { PORT = 3000, MONGODB_URI } = process.env;
 // Middleware para parsear JSON
 app.use(express.json());
 
-// Lista de dominios permitidos para CORS (producción y localhost)
 const allowedOrigins = [
   'https://around.ana.chickenkiller.com',
   'http://localhost:3000',
@@ -51,7 +50,6 @@ app.use('/cards', cardsRouter);
 // Servir frontend React en producción
 app.use(express.static(path.join(__dirname, 'frontend', 'build')));
 
-// Cualquier ruta no capturada va al index.html de React
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
 });
@@ -76,9 +74,7 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 })
   .then(() => {
-    console.log('✅ Conectado a MongoDB');
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
     });
   })
   .catch((err) => {

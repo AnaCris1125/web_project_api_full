@@ -8,7 +8,8 @@ Caracteristicas del proyecto:
 - Creación de servidor.
 - Despliegue del proyecto en un servidor virtual.
 - Implementación de solicitudes errores.
-- Conectar backend y frontend.
+- Conectar backend y frontend en un mismo dominio.
 
 
-
+Dominio frontend: around.ana.chickenkiller.com
+Dominio backend: api.ana.chickenkiller.com

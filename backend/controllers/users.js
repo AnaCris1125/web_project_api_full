@@ -26,7 +26,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       console.error('Error creando usuario:', err);
 
-      if (err.code === 11000) { // error de duplicado en MongoDB
+      if (err.code === 11000) { 
         return res.status(409).send({ message: 'El email ya está registrado' });
       }
       if (err.name === 'ValidationError') {
@@ -36,20 +36,6 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-// module.exports.createUser = (req, res, next) => {
-//   const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
-
-//   bcrypt.hash(password, 10)
-//     .then((hash) =>
-//       User.create({ name, about, avatar, email, password: hash }))
-//     .then((user) => res.send({
-//       _id: user._id, email: user.email, name: user.name, about: user.about, avatar: user.avatar,
-//     }))
-//     .catch((err) => {
-//       console.error('Error creando usuario:', err); 
-//       next(err);
-//     });
-// };
 
 // POST /signin
 module.exports.login = (req, res, next) => {
