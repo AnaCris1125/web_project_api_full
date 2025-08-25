@@ -63,10 +63,10 @@ function App() {
         setIsSuccess(true);
         setIsTooltipOpen(true);  
         
-        setTimeout(() => {
-          setIsTooltipOpen(false);
-          navigate('/signin');
-        }, 2000);
+        // setTimeout(() => {
+        //   setIsTooltipOpen(false);
+        //   navigate('/signin');
+        // }, 2000);
       })
       .catch(() => {
         setIsSuccess(false);
