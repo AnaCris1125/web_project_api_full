@@ -96,9 +96,9 @@ function App() {
 
     // Login handler
 
-    const handleLogin = (email, password) => {
+    const handleLogin = ({email, password}) => {
       console.log('handleLogin llamado con:', email, password);
-      auth.authorize(email, password)
+      auth.authorize({email, password})
         .then((data) => {
           if (data.token) {
             localStorage.setItem('jwt', data.token);
