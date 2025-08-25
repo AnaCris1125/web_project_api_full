@@ -59,7 +59,7 @@ function App() {
   // Register handler
 
   const handleRegister = ({ email, password }) => {
-    register({ email, password })
+    auth.register({ email, password })
       .then(() => {
         setIsSuccess(true);
         setIsTooltipOpen(true);  
