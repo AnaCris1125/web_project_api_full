@@ -57,8 +57,8 @@ function App() {
 
   // Register handler
 
-  const handleRegister = (email, password) => {
-    register(email, password)
+  const handleRegister = ({ email, password }) => {
+    register({ email, password })
       .then(res => {
         if (res.data) {
           setIsSuccess(true);
