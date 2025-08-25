@@ -104,12 +104,17 @@ function App() {
             setLoggedIn(true);
             return auth.checkToken(data.token);
           }
+          return Promise.reject('No se recibió token');
         })
         .then((user) => {
           setCurrentUser(user.data);
           navigate('/');
         })
-        .catch(err => console.log(err));
+        .catch((err) => {
+          console.error('Error en login:', err);
+          setIsSuccess(false);
+          setIsTooltipOpen(true);
+        });
     };
 
   // Logout
