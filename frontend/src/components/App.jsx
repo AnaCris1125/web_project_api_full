@@ -96,62 +96,21 @@ function App() {
 
     // Login handler
 
-    const handleLogin = (email, password) => {
-      authorize(email, password)
-        .then(data => {
+    const handleLogin = ( email, password ) => {
+      auth.authorize( email, password )
+        .then((data) => {
           if (data.token) {
             localStorage.setItem('jwt', data.token);
             setLoggedIn(true);
-            return checkToken(data.token);
+            return auth.checkToken(data.token);
           }
-          return Promise.reject('No se recibió token');
         })
-        .then(res => {
-          const userId = res.data._id;
-          const storedUser = JSON.parse(localStorage.getItem(`userData_${userId}`));
-  
-          if (storedUser) {
-            setCurrentUser(storedUser);
-          } else {
-            const basicUser = {
-              _id: userId,
-              email: res.data.email,
-              name: "Nombre de prueba",
-              about: "Descripción de prueba",
-              avatar: "https://via.placeholder.com/150"
-            };
-            setCurrentUser(basicUser);
-            localStorage.setItem(`userData_${userId}`, JSON.stringify(basicUser));
-          }
-  
-          localStorage.setItem('currentUserId', userId);
-  
-          const storedCards = JSON.parse(localStorage.getItem(`userCards_${userId}`));
-          setCards(storedCards && Array.isArray(storedCards) ? storedCards : []);
-  
+        .then((user) => {
+          setCurrentUser(user.data);
           navigate('/');
         })
-        .catch(err => {
-          console.error('Error en login:', err);
-          setIsSuccess(false);
-          setIsTooltipOpen(true);
-        });
+        .catch(err => console.log(err));
     };
-    // const handleLogin = ( email, password ) => {
-    //   auth.authorize( email, password )
-    //     .then((data) => {
-    //       if (data.token) {
-    //         localStorage.setItem('jwt', data.token);
-    //         setLoggedIn(true);
-    //         return auth.checkToken(data.token);
-    //       }
-    //     })
-    //     .then((user) => {
-    //       setCurrentUser(user.data);
-    //       navigate('/');
-    //     })
-    //     .catch(err => console.log(err));
-    // };
 
   // Logout
   const handleLogout = () => {
