@@ -1,6 +1,6 @@
 const baseUrl = import.meta.env.VITE_BASE_URL || 'https://api.ana.chickenkiller.com';
 
-export const register = ({email, password}) => {
+export const register = (email, password) => {
   return fetch(`${baseUrl}/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -12,11 +12,10 @@ export const register = ({email, password}) => {
 };
 
 export const authorize = (email, password) => {
-  console.log("Enviando login:", { email, password });
   return fetch(`${baseUrl}/signin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, password: password }),
+    body: JSON.stringify({ email, password }),
   }).then(res => {
     if (res.ok) return res.json();
     return Promise.reject(`Error en el login: ${res.status}`);
