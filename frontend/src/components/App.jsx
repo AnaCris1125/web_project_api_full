@@ -56,23 +56,43 @@ function App() {
 
 
   // Register handler
-  const handleRegister = ({ email, password }) => {
-    auth.register({ email, password })
-      .then(() => {
-        setIsSuccess(true);
+
+  const handleRegister = (email, password) => {
+    register(email, password)
+      .then(res => {
+        if (res.data) {
+          setIsSuccess(true);
+          setCards([]);
+          navigate('/signin');
+        } else {
+          setIsSuccess(false);
+        }
         setIsTooltipOpen(true);
-  
-        setTimeout(() => {
-          setIsTooltipOpen(false);
-          navigate('/signin'); 
-        }, 2000);
       })
-      .catch(err => {
-        console.log(err);
+      .catch(() => {
         setIsSuccess(false);
         setIsTooltipOpen(true);
       });
   };
+
+
+  // const handleRegister = ({ email, password }) => {
+  //   auth.register({ email, password })
+  //     .then(() => {
+  //       setIsSuccess(true);
+  //       setIsTooltipOpen(true);
+  
+  //       setTimeout(() => {
+  //         setIsTooltipOpen(false);
+  //         navigate('/signin'); 
+  //       }, 2000);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //       setIsSuccess(false);
+  //       setIsTooltipOpen(true);
+  //     });
+  // };
 
     // Login handler
     const handleLogin = ( email, password ) => {
