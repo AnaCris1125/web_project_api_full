@@ -16,7 +16,7 @@ export const authorize = (email, password) => {
   return fetch(`${baseUrl}/signin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, pasword: password }),
+    body: JSON.stringify({ email: email, password: password }),
   }).then(res => {
     if (res.ok) return res.json();
     return Promise.reject(`Error en el login: ${res.status}`);
