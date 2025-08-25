@@ -67,7 +67,7 @@ function App() {
         setTimeout(() => {
           setIsTooltipOpen(false);
           navigate('/signin');
-        }, 2000);
+        }, 20000);
       })
       .catch(() => {
         setIsSuccess(false);
