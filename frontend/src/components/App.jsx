@@ -59,19 +59,18 @@ function App() {
 
   const handleRegister = ({ email, password }) => {
     register({ email, password })
-      .then(res => {
-        if (res.data) {
-          setIsSuccess(true);
-          setCards([]);
+      .then(() => {
+        setIsSuccess(true);
+        setIsTooltipOpen(true);  
+        
+        setTimeout(() => {
+          setIsTooltipOpen(false);
           navigate('/signin');
-        } else {
-          setIsSuccess(false);
-        }
-        setIsTooltipOpen(true);
+        }, 2000);
       })
       .catch(() => {
         setIsSuccess(false);
-        setIsTooltipOpen(true);
+        setIsTooltipOpen(true); 
       });
   };
 
