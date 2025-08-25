@@ -10,6 +10,7 @@ import Register from './Register/Register.jsx';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
 import InfoTooltip from './InfoTooltip/InfoTooltip.jsx';
 import * as auth from '../utils/auth';
+import { register } from '../utils/auth';
 
 import api from '../utils/api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
@@ -63,10 +64,10 @@ function App() {
         setIsSuccess(true);
         setIsTooltipOpen(true);  
         
-        // setTimeout(() => {
-        //   setIsTooltipOpen(false);
-        //   navigate('/signin');
-        // }, 2000);
+        setTimeout(() => {
+          setIsTooltipOpen(false);
+          navigate('/signin');
+        }, 2000);
       })
       .catch(() => {
         setIsSuccess(false);
