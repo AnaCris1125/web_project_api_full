@@ -55,24 +55,48 @@ function App() {
     }
   }, [loggedIn]);
 
+  // Login handler
+
+  const handleLogin = (email, password) => {
+    console.log('handleLogin llamado con:', email, password);
+    auth.authorize(email, password)
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem('jwt', data.token);
+          setLoggedIn(true);
+          return auth.checkToken(data.token);
+        }
+        return Promise.reject('No se recibió token');
+      })
+      .then((user) => {
+        setCurrentUser(user.data);
+        navigate('/');
+      })
+      .catch((err) => {
+        console.error('Error en login:', err);
+        setIsSuccess(false);
+        setIsTooltipOpen(true);
+      });
+  };
 
   // Register handler
 
   const handleRegister = (email, password) => {
     auth.register(email, password)
-      .then(() => {
+    .then(res => {
+      if (res.data) {
         setIsSuccess(true);
-        setIsTooltipOpen(true);  
-        
-        setTimeout(() => {
-          setIsTooltipOpen(false);
-          navigate('/signin');
-        }, 20000);
-      })
-      .catch(() => {
+        setCards([]);
+        navigate('/signin');
+      } else {
         setIsSuccess(false);
-        setIsTooltipOpen(true); 
-      });
+      }
+      setIsTooltipOpen(true);
+    })
+    .catch(() => {
+      setIsSuccess(false);
+      setIsTooltipOpen(true);
+    });
   };
 
 
@@ -94,29 +118,7 @@ function App() {
   //     });
   // };
 
-    // Login handler
-
-    const handleLogin = (email, password) => {
-      console.log('handleLogin llamado con:', email, password);
-      auth.authorize(email, password)
-        .then((data) => {
-          if (data.token) {
-            localStorage.setItem('jwt', data.token);
-            setLoggedIn(true);
-            return auth.checkToken(data.token);
-          }
-          return Promise.reject('No se recibió token');
-        })
-        .then((user) => {
-          setCurrentUser(user.data);
-          navigate('/');
-        })
-        .catch((err) => {
-          console.error('Error en login:', err);
-          setIsSuccess(false);
-          setIsTooltipOpen(true);
-        });
-    };
+    
 
   // Logout
   const handleLogout = () => {
