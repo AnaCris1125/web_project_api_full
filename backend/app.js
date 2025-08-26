@@ -8,6 +8,7 @@ const expressWinston = require('express-winston');
 const winston = require('winston');
 
 const { login, createUser } = require('./controllers/users');
+console.log('🟢 login es:', typeof login);
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const auth = require('./middlewares/auth');
