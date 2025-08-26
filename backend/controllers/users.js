@@ -32,7 +32,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Datos inválidos' });
       }
-      next(err);
+      return next(err); 
     });
 };
 
@@ -57,7 +57,7 @@ module.exports.login = (req, res, next) => {
             JWT_SECRET,
             { expiresIn: '7d' },
           );
-          res.send({ token });
+          return res.status(200).send({ token });
         });
     })
     .catch(next);
