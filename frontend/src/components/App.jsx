@@ -84,6 +84,7 @@ function App() {
   const handleRegister = (email, password) => {
     auth.register({ email, password })
     .then(res => {
+      console.log('✔️ Registro exitoso:', res);
       if (res.data) {
         setIsSuccess(true);
         setCards([]);
@@ -94,6 +95,7 @@ function App() {
       setIsTooltipOpen(true);
     })
     .catch(() => {
+      console.error('❌ Error en registro:', err); 
       setIsSuccess(false);
       setIsTooltipOpen(true);
     });
