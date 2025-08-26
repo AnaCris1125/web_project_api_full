@@ -59,7 +59,7 @@ function App() {
 
   const handleLogin = (email, password) => {
     console.log('handleLogin llamado con:', email, password);
-    auth.authorize({ email, password })
+    auth.authorize({ email, password})
       .then((data) => {
         if (data.token) {
           localStorage.setItem('jwt', data.token);
@@ -82,7 +82,7 @@ function App() {
   // Register handler
 
   const handleRegister = (email, password) => {
-    auth.register(email, password)
+    auth.register({ email, password })
     .then(res => {
       if (res.data) {
         setIsSuccess(true);
