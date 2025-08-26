@@ -37,6 +37,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
+console.log('login handler cargado');
 
 // POST /signin
 module.exports.login = (req, res, next) => {
