@@ -58,7 +58,9 @@ function App() {
   // Login handler
 
   const handleLogin = (email, password) => {
-    console.log('handleLogin llamado con:', email, password);
+    console.log('🟢 handleLogin llamado');  // Este log debería verse
+    console.log('📤 Datos:', email, password);
+  
     auth.authorize({ email, password})
       .then((data) => {
         if (data.token) {

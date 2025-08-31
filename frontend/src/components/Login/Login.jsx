@@ -9,6 +9,7 @@ function Login({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('🔵 handleSubmit ejecutado');
     onLogin(email, password);
   };
 
