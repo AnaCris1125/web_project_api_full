@@ -37,10 +37,10 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-console.log('login handler cargado');
 
 // POST /signin
 module.exports.login = (req, res) => {
+  console.log('📥 BODY EN /signin:', req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
