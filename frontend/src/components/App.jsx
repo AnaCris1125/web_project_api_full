@@ -85,7 +85,7 @@ function App() {
     auth.register({ email, password })
     .then(res => {
       console.log('✔️ Registro exitoso:', res);
-      if (res.data) {
+      if (res) {
         setIsSuccess(true);
         setCards([]);
         navigate('/signin');
