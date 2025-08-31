@@ -10,8 +10,11 @@ function Login({ onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('🔵 handleSubmit ejecutado');
+  console.log('🟢 enviando a onLogin:', email, password);
     onLogin(email, password);
   };
+
+  console.log('🟡 Login renderizado, onLogin:', onLogin);
 
     return (
       <div className="auth">
