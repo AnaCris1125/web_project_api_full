@@ -94,32 +94,12 @@ function App() {
       }
       setIsTooltipOpen(true);
     })
-    .catch(() => {
+    .catch((err) => {
       console.error('❌ Error en registro:', err); 
       setIsSuccess(false);
       setIsTooltipOpen(true);
     });
   };
-
-
-  // const handleRegister = ({ email, password }) => {
-  //   auth.register({ email, password })
-  //     .then(() => {
-  //       setIsSuccess(true);
-  //       setIsTooltipOpen(true);
-  
-  //       setTimeout(() => {
-  //         setIsTooltipOpen(false);
-  //         navigate('/signin'); 
-  //       }, 2000);
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       setIsSuccess(false);
-  //       setIsTooltipOpen(true);
-  //     });
-  // };
-
     
 
   // Logout
@@ -170,3 +150,20 @@ function App() {
 
 export default App;
 
+  // const handleRegister = ({ email, password }) => {
+  //   auth.register({ email, password })
+  //     .then(() => {
+  //       setIsSuccess(true);
+  //       setIsTooltipOpen(true);
+  
+  //       setTimeout(() => {
+  //         setIsTooltipOpen(false);
+  //         navigate('/signin'); 
+  //       }, 2000);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //       setIsSuccess(false);
+  //       setIsTooltipOpen(true);
+  //     });
+  // };

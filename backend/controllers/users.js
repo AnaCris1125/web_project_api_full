@@ -40,29 +40,33 @@ module.exports.createUser = (req, res, next) => {
 console.log('login handler cargado');
 
 // POST /signin
-module.exports.login = (req, res, next) => {
-  console.log('Login request body:', req.body);
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).send({ message: 'Email y contraseña son obligatorios' });
+  }
 
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Correo o contraseña incorrectos');
+        return res.status(401).send({ message: 'Usuario no encontrado' });
       }
+
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new UnauthorizedError('Correo o contraseña incorrectos');
+            return res.status(401).send({ message: 'Contraseña incorrecta' });
           }
-          const token = jwt.sign(
-            { _id: user._id },
-            JWT_SECRET,
-            { expiresIn: '7d' },
-          );
-          return res.status(200).send({ token });
+
+          const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+          res.send({ token });
         });
     })
-    .catch(next);
+    .catch((err) => {
+      console.error('Error en /signin:', err);
+      res.status(500).send({ message: 'Error interno del servidor' });
+    });
 };
 
 // GET /users/me
