@@ -49,9 +49,12 @@ module.exports.login = (req, res) => {
 
   User.findOne({ email }).select('+password')
     .then((user) => {
+      console.log('🧪 Usuario:', user);
       if (!user) {
         return res.status(401).send({ message: 'Usuario no encontrado' });
       }
+
+      console.log('🔑 Contraseña en el usuario:', user.password);
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
