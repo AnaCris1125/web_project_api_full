@@ -8,7 +8,6 @@ const expressWinston = require('express-winston');
 const winston = require('winston');
 
 const { login, createUser } = require('./controllers/users');
-console.log('🟢 login es:', typeof login);
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const auth = require('./middlewares/auth');
@@ -77,13 +76,12 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 })
   .then(() => {
-    console.log('✅ Conectado a MongoDB');
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+      console.log(`Servidor corriendo en el puerto ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error('❌ Error conectando a MongoDB:', err);
+    console.error('Error conectando a MongoDB:', err);
     process.exit(1);
   });
 

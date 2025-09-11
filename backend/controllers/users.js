@@ -9,7 +9,7 @@ const { JWT_SECRET = 'dev-secret' } = process.env;
 
 module.exports.createUser = (req, res, next) => {
   const { name = 'Jacques Cousteau', about = 'Explorador', avatar = 'https://practicum-content.s3.us-west-1.amazonaws.com/resources/moved_avatar_1604080799.jpg', email, password } = req.body;
-  console.log('🚀 BODY RECIBIDO EN SIGNUP:', req.body);
+  
 
   if (!email || !password) {
     return res.status(400).send({ message: 'Email y contraseña son obligatorios' });
@@ -40,7 +40,6 @@ module.exports.createUser = (req, res, next) => {
 
 // POST /signin
 module.exports.login = (req, res) => {
-  console.log('📥 BODY EN /signin:', req.body);
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -53,8 +52,6 @@ module.exports.login = (req, res) => {
       if (!user) {
         return res.status(401).send({ message: 'Usuario no encontrado' });
       }
-
-      console.log('🔑 Contraseña en el usuario:', user.password);
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {

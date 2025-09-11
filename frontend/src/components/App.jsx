@@ -58,8 +58,6 @@ function App() {
   // Login handler
 
   const handleLogin = (email, password) => {
-    console.log('📤 handleLogin recibe:', email, password);
-  
     auth.authorize({ email, password})
       .then((data) => {
         if (data.token) {
@@ -85,7 +83,6 @@ function App() {
   const handleRegister = (email, password) => {
     auth.register({ email, password })
     .then(res => {
-      console.log('✔️ Registro exitoso:', res);
       if (res) {
         setIsSuccess(true);
         setCards([]);
@@ -151,20 +148,4 @@ function App() {
 
 export default App;
 
-  // const handleRegister = ({ email, password }) => {
-  //   auth.register({ email, password })
-  //     .then(() => {
-  //       setIsSuccess(true);
-  //       setIsTooltipOpen(true);
-  
-  //       setTimeout(() => {
-  //         setIsTooltipOpen(false);
-  //         navigate('/signin'); 
-  //       }, 2000);
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       setIsSuccess(false);
-  //       setIsTooltipOpen(true);
-  //     });
-  // };
+
